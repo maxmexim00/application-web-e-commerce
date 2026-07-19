@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - E-Shop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1><i class="fas fa-list"></i> My Orders</h1>
+    
+    {% if orders %}
+        {% for order in orders %}
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Order #{{ order.id }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-{% if order.status == 'confirmed' %}success{% else %}warning{% endif %}">
+                                {{ order.status|upper }}
+                            </span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <small>{{ order.order_date.strftime('%B %d, %Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Items:</h6>
+                            {% for item in order.items %}
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ item.product.name }} x{{ item.quantity }}</span>
+                                    <span>${{ "%.2f"|format(item.price * item.quantity) }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Total:</strong> <span class="text-primary">${{ "%.2f"|format(order.total_amount) }}</span></p>
+                            <p><strong>Shipping Address:</strong></p>
+                            <p class="small">{{ order.shipping_address }}</p>
+                            <a href="{{ url_for('order_confirmation', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-5x text-muted mb-3"></i>
+            <h3>No orders yet</h3>
+            <p class="text-muted">Start shopping and place your first order!</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-store"></i> Browse Products
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
